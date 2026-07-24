@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { createComplaint, getComplaint, listComplaints, trackComplaint, updateComplaint } from '../controllers/complaint.controller.js';
+import { requireAuth } from '../middleware/auth.js';
+import { upload } from '../middleware/upload.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+export const complaintRouter = Router();
+complaintRouter.post('/', upload.single('attachment'), asyncHandler(createComplaint));
+complaintRouter.get('/track/:referenceCode', asyncHandler(trackComplaint));
+complaintRouter.get('/', requireAuth, asyncHandler(listComplaints));
+complaintRouter.get('/:id', requireAuth, asyncHandler(getComplaint));
+complaintRouter.patch('/:id', requireAuth, asyncHandler(updateComplaint));
