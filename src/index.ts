@@ -6,5 +6,5 @@ await connectDatabase();
 
 const app = createApp();
 app.listen(env.PORT, () => {
-  console.log(`LCOCMS server listening on http://localhost:${env.PORT}`);
+  console.log(`LCOCMS server listening on port ${env.PORT}`);
 });
