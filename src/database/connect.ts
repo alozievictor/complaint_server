@@ -6,5 +6,5 @@ export async function connectDatabase() {
   const connection = await mongoose.connect(env.MONGODB_URI);
   const { host, name } = connection.connection;
 
-  console.log(`MongoDB connected to ${host}/${name}`);
+  console.log(`MongoDB connected to ${host}/${name}`);  
 }

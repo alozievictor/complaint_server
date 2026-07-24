@@ -18,6 +18,9 @@ export function createApp() {
     app.use(express.urlencoded({ extended: true }));
     app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
     app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 300 }));
+    app.get('/', (_req, res) => {
+        res.json({ status: 'ok', service: 'lcocms-server' });
+    });
     app.get('/api/health', (_req, res) => {
         res.json({ status: 'ok', service: 'lcocms-server' });
     });
