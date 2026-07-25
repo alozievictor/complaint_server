@@ -18,10 +18,13 @@ export const createComplaintSchema = z.object({
   if (!data.isAnonymous && !data.realEmail) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['realEmail'], message: 'Email is required for identified complaints' });
   }
+  if (data.isAnonymous && !data.notificationEmail) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['notificationEmail'], message: 'Notification email is required for anonymous complaints' });
+  }
 });
 
 export const trackComplaintSchema = z.object({
-  referenceCode: z.string().trim().regex(/^LC-\d{4}-\d{4,}$/i, 'Invalid reference code format'),
+  trackingToken: z.string().trim().uuid('Invalid tracking code format'),
 });
 
 export const listComplaintsQuerySchema = z.object({

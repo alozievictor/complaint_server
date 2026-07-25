@@ -1,44 +1,49 @@
 import { ComplaintModel } from '../models/Complaint.js';
 import { createComplaintSchema, listComplaintsQuerySchema, trackComplaintSchema, updateComplaintSchema } from '../validators/complaint.validators.js';
-import { generateAnonymousLabel, generateReferenceCode } from '../services/reference.service.js';
+import { generateAnonymousLabel, generateReferenceCode, generateTrackingToken } from '../services/reference.service.js';
 import { presentComplaintForAdmin, presentComplaintForStudent } from '../services/presenter.service.js';
 import { sendComplaintConfirmation, sendStatusUpdate } from '../services/mail.service.js';
 import { HttpError, notFound } from '../utils/httpError.js';
+import { deleteComplaintAttachment, uploadComplaintAttachment } from '../services/cloudinary.service.js';
 export async function createComplaint(req, res) {
     const data = createComplaintSchema.parse(req.body);
-    const attachment = req.file
-        ? [{
-                originalName: req.file.originalname,
-                storedName: req.file.filename,
-                mimeType: req.file.mimetype,
-                size: req.file.size,
-                path: req.file.path,
-            }]
-        : [];
+    const uploadedAttachment = req.file ? await uploadComplaintAttachment(req.file) : null;
+    const attachment = uploadedAttachment ? [uploadedAttachment] : [];
     const referenceCode = await generateReferenceCode();
+    const trackingToken = generateTrackingToken();
     const anonymousLabel = data.isAnonymous ? await generateAnonymousLabel() : '';
     const studentEmail = data.isAnonymous ? data.notificationEmail : data.realEmail;
-    const complaint = await ComplaintModel.create({
-        referenceCode,
-        category: data.category,
-        subject: data.subject,
-        description: data.description,
-        isAnonymous: data.isAnonymous,
-        realName: data.isAnonymous ? '' : data.realName,
-        realEmail: data.isAnonymous ? '' : data.realEmail,
-        notificationEmail: studentEmail,
-        anonymousLabel,
-        attachments: attachment,
-        statusHistory: [{ status: 'pending', note: 'Complaint submitted' }],
-    });
-    await sendComplaintConfirmation(studentEmail ?? '', complaint.referenceCode);
+    let complaint;
+    try {
+        complaint = await ComplaintModel.create({
+            referenceCode,
+            trackingToken,
+            category: data.category,
+            subject: data.subject,
+            description: data.description,
+            isAnonymous: data.isAnonymous,
+            realName: data.isAnonymous ? '' : data.realName,
+            realEmail: data.isAnonymous ? '' : data.realEmail,
+            notificationEmail: studentEmail,
+            anonymousLabel,
+            attachments: attachment,
+            statusHistory: [{ status: 'pending', note: 'Complaint submitted' }],
+        });
+    }
+    catch (error) {
+        if (uploadedAttachment) {
+            await deleteComplaintAttachment(uploadedAttachment.publicId, uploadedAttachment.resourceType).catch(console.error);
+        }
+        throw error;
+    }
+    await sendComplaintConfirmation(studentEmail ?? '', complaint.trackingToken);
     res.status(201).json({ complaint: presentComplaintForStudent(complaint) });
 }
 export async function trackComplaint(req, res) {
-    const { referenceCode } = trackComplaintSchema.parse(req.params);
-    const complaint = await ComplaintModel.findOne({ referenceCode: referenceCode.toUpperCase() });
+    const { trackingToken } = trackComplaintSchema.parse(req.params);
+    const complaint = await ComplaintModel.findOne({ trackingToken: trackingToken.toUpperCase() });
     if (!complaint)
-        throw notFound('No complaint found with that reference code');
+        throw notFound('No complaint found with that tracking code');
     res.json({ complaint: presentComplaintForStudent(complaint) });
 }
 export async function listComplaints(req, res) {

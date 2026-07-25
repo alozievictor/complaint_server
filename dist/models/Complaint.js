@@ -2,10 +2,11 @@ import mongoose, { Schema } from "mongoose";
 import { complaintCategories, complaintStatuses } from "../types/domain.js";
 const attachmentSchema = new Schema({
     originalName: { type: String, required: true },
-    storedName: { type: String, required: true },
+    publicId: { type: String, required: true },
     mimeType: { type: String, required: true },
+    resourceType: { type: String, required: true },
     size: { type: Number, required: true },
-    path: { type: String, required: true },
+    secureUrl: { type: String, required: true },
 }, { _id: false });
 const statusHistorySchema = new Schema({
     status: { type: String, enum: complaintStatuses, required: true },
@@ -15,6 +16,8 @@ const statusHistorySchema = new Schema({
 }, { _id: false });
 const complaintSchema = new Schema({
     referenceCode: { type: String, required: true, unique: true, index: true },
+    // Only this random token may be used for public complaint tracking.
+    trackingToken: { type: String, required: true, unique: true, index: true },
     category: {
         type: String,
         enum: complaintCategories,

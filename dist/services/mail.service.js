@@ -12,14 +12,14 @@ const transporter = hasSmtp
         },
     })
     : null;
-export async function sendComplaintConfirmation(to, referenceCode) {
+export async function sendComplaintConfirmation(to, trackingToken) {
     if (!transporter || !to)
         return;
     await transporter.sendMail({
         from: env.SMTP_FROM,
         to,
-        subject: `Complaint received: ${referenceCode}`,
-        text: `Your complaint has been received. Your reference code is ${referenceCode}. Use it to track your complaint status.`,
+        subject: 'Complaint received',
+        text: `Your complaint has been received. Your private tracking code is ${trackingToken}. Keep it safe and use it to track your complaint status.`,
     });
 }
 export async function sendStatusUpdate(to, referenceCode, status, response) {

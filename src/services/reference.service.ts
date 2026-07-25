@@ -1,4 +1,5 @@
 import { CounterModel } from '../models/Counter.js';
+import { randomUUID } from 'node:crypto';
 
 async function nextCounter(name: string) {
   const counter = await CounterModel.findOneAndUpdate(
@@ -18,4 +19,8 @@ export async function generateReferenceCode() {
 export async function generateAnonymousLabel() {
   const value = await nextCounter('anonymous');
   return `Anonymous${value}`;
+}
+
+export function generateTrackingToken() {
+  return randomUUID().toUpperCase();
 }

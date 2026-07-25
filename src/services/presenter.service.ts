@@ -23,6 +23,7 @@ export function presentComplaintForStudent(complaint: ComplaintDocument) {
   return {
     id: complaint._id.toString(),
     referenceCode: complaint.referenceCode,
+    trackingToken: complaint.trackingToken,
     category: complaint.category,
     subject: complaint.subject,
     description: complaint.description,

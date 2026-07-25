@@ -12,10 +12,12 @@
     "start": "node dist/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "seed": "tsx src/database/seed.ts",
-    "ensure:super-admin": "tsx src/database/ensureSuperAdmin.ts"
+    "ensure:super-admin": "tsx src/database/ensureSuperAdmin.ts",
+    "migrate:tracking-tokens": "tsx src/database/migrateTrackingTokens.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.10.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",

@@ -5,7 +5,7 @@ import { upload } from '../middleware/upload.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 export const complaintRouter = Router();
 complaintRouter.post('/', upload.single('attachment'), asyncHandler(createComplaint));
-complaintRouter.get('/track/:referenceCode', asyncHandler(trackComplaint));
+complaintRouter.get('/track/:trackingToken', asyncHandler(trackComplaint));
 complaintRouter.get('/', requireAuth, asyncHandler(listComplaints));
 complaintRouter.get('/:id', requireAuth, asyncHandler(getComplaint));
 complaintRouter.patch('/:id', requireAuth, asyncHandler(updateComplaint));

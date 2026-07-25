@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { AdminModel } from '../models/Admin.js';
 import { ComplaintModel } from '../models/Complaint.js';
 import { CounterModel } from '../models/Counter.js';
+import { randomUUID } from 'node:crypto';
 
 const admins = [
   { name: 'Mrs. Jacob', username: 'academic', password: 'password123', role: 'academic', email: 'academic@lincoln.edu.gh' },
@@ -15,6 +16,7 @@ const admins = [
 const complaints = [
   {
     referenceCode: 'LC-2026-0001',
+    trackingToken: randomUUID().toUpperCase(),
     category: 'academic',
     subject: 'Unfair Grade Assessment in Calculus',
     description: 'My coursework was graded without proper feedback and I believe the score does not reflect the quality of my submission. I submitted all required work on time but received a failing grade with no explanation from the lecturer.',
@@ -28,6 +30,7 @@ const complaints = [
   },
   {
     referenceCode: 'LC-2026-0002',
+    trackingToken: randomUUID().toUpperCase(),
     category: 'hostel',
     subject: 'Water Supply Outage in Block C',
     description: 'There has been no running water in Block C, Rooms 14 to 20, for the past 5 days. We have reported to the hostel warden multiple times but no action has been taken. Students are struggling with basic hygiene.',
@@ -38,6 +41,7 @@ const complaints = [
   },
   {
     referenceCode: 'LC-2026-0003',
+    trackingToken: randomUUID().toUpperCase(),
     category: 'finance',
     subject: 'Double Charged for Accommodation Fee',
     description: 'I was charged twice for the second semester accommodation fee. I have bank receipts showing both transactions on the same date. Please investigate and refund the duplicate charge as soon as possible.',
@@ -53,6 +57,7 @@ const complaints = [
   },
   {
     referenceCode: 'LC-2026-0004',
+    trackingToken: randomUUID().toUpperCase(),
     category: 'ict',
     subject: 'Student Portal Login Issues - Cannot Access Results',
     description: 'I have been unable to log into the student portal for 2 weeks. I cannot access my timetable, results, or academic resources. The error says "Invalid credentials" even after multiple password resets through the help desk.',
