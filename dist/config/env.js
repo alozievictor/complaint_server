@@ -14,7 +14,6 @@ const envSchema = z.object({
     MONGODB_URI: z.string().default('mongodb://127.0.0.1:27017/lcocms'),
     JWT_SECRET: z.string().min(24).default('development-secret-change-before-production'),
     JWT_EXPIRES_IN: z.string().default('8h'),
-    UPLOAD_DIR: z.string().default('uploads'),
     SMTP_HOST: z.string().optional(),
     SMTP_PORT: z.coerce.number().default(587),
     SMTP_USER: z.string().optional(),

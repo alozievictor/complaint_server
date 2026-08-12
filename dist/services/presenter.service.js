@@ -1,3 +1,18 @@
+import { getSlaDates, isNearDeadline } from './sla.service.js';
+function presentSla(complaint) {
+    const fallback = getSlaDates(complaint.createdAt);
+    const firstResponseDueAt = complaint.firstResponseDueAt ?? fallback.firstResponseDueAt;
+    const resolutionDueAt = complaint.resolutionDueAt ?? fallback.resolutionDueAt;
+    const now = new Date();
+    return {
+        firstResponseAt: complaint.firstResponseAt,
+        firstResponseDueAt,
+        resolutionDueAt,
+        firstResponseOverdue: !complaint.firstResponseAt && firstResponseDueAt < now,
+        resolutionOverdue: complaint.status !== 'resolved' && resolutionDueAt < now,
+        nearingDeadline: complaint.status !== 'resolved' && (isNearDeadline(firstResponseDueAt, now) || isNearDeadline(resolutionDueAt, now)),
+    };
+}
 export function presentAdmin(admin) {
     return {
         id: admin._id.toString(),
@@ -23,6 +38,11 @@ export function presentComplaintForStudent(complaint) {
         status: complaint.status,
         submittedAt: complaint.createdAt,
         adminResponse: complaint.adminResponse,
+        messages: complaint.messages.map(message => ({
+            sender: message.sender,
+            body: message.body,
+            createdAt: message.createdAt,
+        })),
         internalNotes: '',
     };
 }
@@ -43,6 +63,18 @@ export function presentComplaintForAdmin(complaint, role) {
         status: complaint.status,
         submittedAt: complaint.createdAt,
         adminResponse: complaint.adminResponse,
+        messages: complaint.messages.map(message => ({
+            sender: message.sender,
+            body: message.body,
+            createdAt: message.createdAt,
+        })),
+        attachments: complaint.attachments.map((attachment, index) => ({
+            id: String(index),
+            originalName: attachment.originalName,
+            mimeType: attachment.mimeType,
+            size: attachment.size,
+        })),
         internalNotes: complaint.internalNotes,
+        sla: presentSla(complaint),
     };
 }

@@ -14,6 +14,11 @@ const statusHistorySchema = new Schema({
     changedAt: { type: Date, default: Date.now },
     note: { type: String, trim: true, default: "" },
 }, { _id: false });
+const messageSchema = new Schema({
+    sender: { type: String, enum: ['student', 'admin'], required: true },
+    body: { type: String, required: true, trim: true, maxlength: 5000 },
+    createdAt: { type: Date, default: Date.now },
+}, { _id: false });
 const complaintSchema = new Schema({
     referenceCode: { type: String, required: true, unique: true, index: true },
     // Only this random token may be used for public complaint tracking.
@@ -43,10 +48,14 @@ const complaintSchema = new Schema({
         index: true,
     },
     adminResponse: { type: String, trim: true, default: "" },
+    messages: { type: [messageSchema], default: [] },
     internalNotes: { type: String, trim: true, default: "" },
     attachments: { type: [attachmentSchema], default: [] },
     statusHistory: { type: [statusHistorySchema], default: [] },
     resolvedAt: { type: Date },
+    firstResponseAt: { type: Date },
+    firstResponseDueAt: { type: Date },
+    resolutionDueAt: { type: Date },
 }, { timestamps: true });
 complaintSchema.index({ category: 1, status: 1, createdAt: -1 });
 complaintSchema.index({ createdAt: -1 });

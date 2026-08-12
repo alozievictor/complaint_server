@@ -49,3 +49,12 @@ export async function deleteComplaintAttachment(publicId, resourceType) {
         invalidate: true,
     });
 }
+export function generateComplaintAttachmentUrl(publicId, resourceType) {
+    ensureConfigured();
+    return cloudinary.url(publicId, {
+        resource_type: resourceType,
+        type: 'authenticated',
+        secure: true,
+        sign_url: true,
+    });
+}

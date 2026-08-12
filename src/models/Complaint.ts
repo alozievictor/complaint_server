@@ -23,6 +23,15 @@ const statusHistorySchema = new Schema(
   { _id: false },
 );
 
+const messageSchema = new Schema(
+  {
+    sender: { type: String, enum: ['student', 'admin'], required: true },
+    body: { type: String, required: true, trim: true, maxlength: 5000 },
+    createdAt: { type: Date, default: Date.now },
+  },
+  { _id: false },
+);
+
 const complaintSchema = new Schema(
   {
     referenceCode: { type: String, required: true, unique: true, index: true },
@@ -53,10 +62,14 @@ const complaintSchema = new Schema(
       index: true,
     },
     adminResponse: { type: String, trim: true, default: "" },
+    messages: { type: [messageSchema], default: [] },
     internalNotes: { type: String, trim: true, default: "" },
     attachments: { type: [attachmentSchema], default: [] },
     statusHistory: { type: [statusHistorySchema], default: [] },
     resolvedAt: { type: Date },
+    firstResponseAt: { type: Date },
+    firstResponseDueAt: { type: Date },
+    resolutionDueAt: { type: Date },
   },
   { timestamps: true },
 );

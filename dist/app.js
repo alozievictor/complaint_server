@@ -8,6 +8,7 @@ import { authRouter } from './routes/auth.routes.js';
 import { complaintRouter } from './routes/complaint.routes.js';
 import { adminRouter } from './routes/admin.routes.js';
 import { analyticsRouter } from './routes/analytics.routes.js';
+import { auditRouter } from './routes/audit.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFound.js';
 export function createApp() {
@@ -28,6 +29,7 @@ export function createApp() {
     app.use('/api/complaints', complaintRouter);
     app.use('/api/admins', adminRouter);
     app.use('/api/analytics', analyticsRouter);
+    app.use('/api/audit-logs', auditRouter);
     app.use(notFoundHandler);
     app.use(errorHandler);
     return app;

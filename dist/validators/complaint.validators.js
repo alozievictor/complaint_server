@@ -23,9 +23,17 @@ export const createComplaintSchema = z.object({
 export const trackComplaintSchema = z.object({
     trackingToken: z.string().trim().uuid('Invalid tracking code format'),
 });
+export const followUpMessageSchema = z.object({
+    message: z.string().trim().min(3, 'Follow-up message is required').max(5000),
+});
 export const listComplaintsQuerySchema = z.object({
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(100).default(10),
     status: z.enum(complaintStatuses).optional(),
+    category: z.enum(complaintCategories).optional(),
     search: z.string().trim().optional(),
+    dateFrom: z.coerce.date().optional(),
+    dateTo: z.coerce.date().optional(),
 });
 export const updateComplaintSchema = z.object({
     status: z.enum(complaintStatuses).optional(),

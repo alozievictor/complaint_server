@@ -13,7 +13,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "seed": "tsx src/database/seed.ts",
     "ensure:super-admin": "tsx src/database/ensureSuperAdmin.ts",
-    "migrate:tracking-tokens": "tsx src/database/migrateTrackingTokens.ts"
+    "migrate:tracking-tokens": "tsx src/database/migrateTrackingTokens.ts",
+    "migrate:admin-email-index": "tsx src/database/migrateAdminEmailIndex.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

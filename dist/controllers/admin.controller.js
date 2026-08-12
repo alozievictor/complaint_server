@@ -3,6 +3,7 @@ import { AdminModel } from '../models/Admin.js';
 import { createAdminSchema, updateAdminSchema } from '../validators/admin.validators.js';
 import { presentAdmin } from '../services/presenter.service.js';
 import { HttpError, notFound } from '../utils/httpError.js';
+import { recordAuditLog } from '../services/audit.service.js';
 export async function listAdmins(_req, res) {
     const admins = await AdminModel.find().sort({ role: 1, name: 1 });
     res.json({ admins: admins.map(presentAdmin) });
@@ -18,6 +19,11 @@ export async function createAdmin(req, res) {
         passwordHash,
         isActive: data.isActive ?? true,
     });
+    void recordAuditLog({
+        actorType: 'admin', actorId: req.user?.id, actorName: req.user?.name,
+        action: 'admin_created', adminId: admin._id.toString(), targetLabel: admin.email,
+        newValue: { name: admin.name, username: admin.username, email: admin.email, role: admin.role, isActive: admin.isActive },
+    });
     res.status(201).json({ admin: presentAdmin(admin) });
 }
 export async function updateAdmin(req, res) {
@@ -28,7 +34,16 @@ export async function updateAdmin(req, res) {
     if (admin.role === 'super' && data.isActive === false) {
         throw new HttpError(400, 'Super Admin account cannot be deactivated', 'SUPER_ADMIN_PROTECTED');
     }
+    const previousActive = admin.isActive;
+    const previousValue = { name: admin.name, email: admin.email, role: admin.role, isActive: admin.isActive };
     Object.assign(admin, data);
     await admin.save();
+    if (data.isActive !== undefined && data.isActive !== previousActive) {
+        void recordAuditLog({
+            actorType: 'admin', actorId: req.user?.id, actorName: req.user?.name,
+            action: data.isActive ? 'admin_activated' : 'admin_deactivated', adminId: admin._id.toString(), targetLabel: admin.email,
+            previousValue, newValue: { ...previousValue, isActive: admin.isActive },
+        });
+    }
     res.json({ admin: presentAdmin(admin) });
 }
